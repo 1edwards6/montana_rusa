@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10263f">
+  <meta name="description" content="Laboratorio interactivo para diseñar y modelar el movimiento de un carrito en una montaña rusa.">
+  <title>Laboratorio de montañas rusas</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.0">
+  <script src="app.js?v=1.0.0" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">∿</div>
+    <div class="brand-copy">
+      <div class="eyebrow">LABORATORIO INTERACTIVO</div>
+      <h1>Montañas rusas</h1>
+      <p>Diseña, experimenta y construye un modelo matemático.</p>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <nav class="tabs" aria-label="Secciones del laboratorio">
+      <button class="tab active" data-tab="design" aria-selected="true"><span>01</span> Diseña</button>
+      <button class="tab" data-tab="simulate" aria-selected="false"><span>02</span> Simula</button>
+      <button class="tab" data-tab="model" aria-selected="false"><span>03</span> Analiza el modelo</button>
+    </nav>
+
+    <section class="page active" id="page-design">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">ETAPA 1 · EXPLORACIÓN</div>
+          <h2>Construye tu recorrido</h2>
+          <p>Arrastra los puntos de control para cambiar las subidas y bajadas de la pista.</p>
+        </div>
+        <div class="step-chip">Diseño libre</div>
+      </div>
+
+      <div class="workspace">
+        <section class="panel track-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Diseñador de trayectoria</h3>
+              <p>Distancia horizontal y altura, en metros.</p>
+            </div>
+            <span class="live-dot">Editable</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="designCanvas" aria-label="Gráfica editable de la trayectoria de la montaña rusa"></canvas>
+          </div>
+          <div class="track-legend"><span class="legend-line"></span> Pista <span class="legend-point"></span> Punto de control</div>
+          <div class="toolbar">
+            <button class="button secondary" id="addPoint">＋ Añadir punto</button>
+            <button class="button secondary" id="removePoint">− Quitar último</button>
+            <button class="button ghost" id="resetTrack">Restablecer diseño</button>
+          </div>
+        </section>
+
+        <aside class="panel controls-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Parámetros iniciales</h3>
+              <p>Condiciones del experimento.</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Altura de partida</span>
+            <strong id="startHeight">40.0 <small>m</small></strong>
+            <span class="metric-note">Se modifica arrastrando el primer punto.</span>
+          </div>
+          <div class="control-group">
+            <div class="label-row"><label for="initialSpeed">Velocidad inicial</label><output id="initialSpeedValue">0.0 m/s</output></div>
+            <input id="initialSpeed" type="range" min="0" max="20" step="0.5" value="0">
+            <div class="range-labels"><span>0 m/s</span><span>20 m/s</span></div>
+          </div>
+          <div class="info-note">
+            <strong>Tu desafío</strong>
+            <p>Diseña una pista que el carrito pueda recorrer por completo. Prueba diferentes alturas y velocidades iniciales.</p>
+          </div>
+          <button class="button primary full" id="tryDesign">Probar este diseño <span>→</span></button>
+        </aside>
+      </div>
+      <div class="prompt-strip"><span class="prompt-icon">?</span><p><strong>Para comenzar:</strong> ¿Qué condiciones debe cumplir una montaña rusa para que el carrito supere la primera subida después del descenso?</p></div>
+    </section>
+
+    <section class="page" id="page-simulate">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">ETAPA 2 · EXPERIMENTACIÓN</div>
+          <h2>Pon a prueba tu montaña rusa</h2>
+          <p>Observa cómo se transforma la energía potencial en energía cinética.</p>
+        </div>
+        <div class="step-chip">Simulación física</div>
+      </div>
+
+      <section class="panel simulation-panel">
+        <div class="panel-heading sim-heading">
+          <div><h3>Movimiento del carrito</h3><p>Modelo ideal: sin fricción ni resistencia del aire.</p></div>
+          <span class="status-pill" id="simulationStatus">Listo para iniciar</span>
+        </div>
+        <div class="canvas-wrap sim-canvas-wrap">
+          <canvas id="simulationCanvas" aria-label="Animación del carrito sobre la montaña rusa"></canvas>
+        </div>
+        <div class="simulation-controls">
+          <button class="button primary" id="playPause">▶ Iniciar</button>
+          <button class="button secondary" id="restartSimulation">↺ Reiniciar</button>
+          <div class="sim-readout"><span>Tiempo</span><strong id="timeReadout">0.00 s</strong></div>
+          <div class="sim-readout"><span>Velocidad</span><strong id="speedReadout">0.00 m/s</strong></div>
+          <div class="sim-readout"><span>Altura</span><strong id="heightReadout">40.00 m</strong></div>
+        </div>
+      </section>
+      <div class="simulation-bottom">
+        <section class="panel compact-panel">
+          <h3>Condiciones de partida</h3>
+          <div class="control-group">
+            <div class="label-row"><label for="initialSpeedSim">Velocidad inicial</label><output id="initialSpeedSimValue">0.0 m/s</output></div>
+            <input id="initialSpeedSim" type="range" min="0" max="20" step="0.5" value="0">
+          </div>
+          <p class="helper-text">Para cambiar la forma de la pista, regresa a la pestaña <strong>Diseña</strong>.</p>
+        </section>
+        <section class="panel compact-panel result-panel">
+          <h3>¿Qué ocurrió?</h3>
+          <p id="resultMessage">Inicia la simulación para observar si el carrito completa el recorrido.</p>
+          <button class="text-button" id="goToModel">Explorar los resultados matemáticos <span>→</span></button>
+        </section>
+      </div>
+    </section>
+
+    <section class="page" id="page-model">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">ETAPA 3 · MATEMATIZACIÓN Y VALIDACIÓN</div>
+          <h2>¿Cómo podemos explicar el movimiento?</h2>
+          <p>Relaciona la altura de la pista con la velocidad que alcanza el carrito.</p>
+        </div>
+        <div class="step-chip">Modelo matemático</div>
+      </div>
+
+      <section class="panel equation-panel">
+        <div class="equation-intro"><span class="equation-icon">ƒ</span><div><h3>Conservación de la energía mecánica</h3><p>En el modelo ideal, la energía mecánica total permanece constante.</p></div></div>
+        <div class="equation"><i>m</i><i>g</i><i>h</i><sub>0</sub> + ½<i>m</i><i>v</i><sub>0</sub><sup>2</sup> = <i>m</i><i>g</i><i>h</i> + ½<i>m</i><i>v</i><sup>2</sup></div>
+        <div class="equation-main"><i>v</i> = √(<i>v</i><sub>0</sub><sup>2</sup> + 2<i>g</i>(<i>h</i><sub>0</sub> − <i>h</i>))</div>
+        <div class="equation-explanation"><span><b>h₀</b> altura inicial</span><span><b>h</b> altura actual</span><span><b>v₀</b> velocidad inicial</span><span><b>g</b> gravedad (9.81 m/s²)</span></div>
+        <p class="model-caveat">Este primer modelo supone que no hay fricción ni resistencia del aire. La masa se simplifica, por lo que no determina la velocidad.</p>
+      </section>
+
+      <div class="chart-grid">
+        <section class="panel chart-panel"><div class="panel-heading"><div><h3>Altura de la pista</h3><p>Altura según la distancia horizontal.</p></div></div><div id="heightChart" class="chart-box"></div></section>
+        <section class="panel chart-panel"><div class="panel-heading"><div><h3>Velocidad del carrito</h3><p>Velocidad según la distancia recorrida.</p></div></div><div id="speedChart" class="chart-box"></div></section>
+        <section class="panel chart-panel energy-chart"><div class="panel-heading"><div><h3>Energía por unidad de masa</h3><p>Transformación entre energía potencial y cinética.</p></div></div><div id="energyChart" class="chart-box"></div><div class="chart-legend"><span><i class="potential-key"></i> Potencial (gh)</span><span><i class="kinetic-key"></i> Cinética (v²/2)</span></div></section>
+      </div>
+
+      <section class="panel table-panel">
+        <div class="panel-heading"><div><h3>Tabla de resultados</h3><p>Valores aproximados en distintos puntos del recorrido posible.</p></div></div>
+        <div class="table-scroll"><table><thead><tr><th>Posición</th><th>Distancia recorrida</th><th>Altura</th><th>Tiempo</th><th>Velocidad</th></tr></thead><tbody id="resultsTable"><tr><td colspan="5">Diseña una pista para consultar los resultados.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="panel reflection-panel">
+        <div class="reflection-title"><span class="prompt-icon">✎</span><div><h3>Preguntas para construir y validar el modelo</h3><p>Antes de aceptar una expresión matemática, contrástala con el fenómeno.</p></div></div>
+        <div class="reflection-grid">
+          <article><span>01</span><h4>Predicción</h4><p>¿En qué parte del recorrido esperas que el carrito alcance su mayor velocidad? ¿Por qué?</p></article>
+          <article><span>02</span><h4>Relación</h4><p>¿Cómo cambia la velocidad cuando disminuye la altura? ¿Qué relación observas?</p></article>
+          <article><span>03</span><h4>Validación</h4><p>¿La velocidad que predice el modelo coincide con la simulación? Explica posibles diferencias.</p></article>
+          <article><span>04</span><h4>Limitaciones</h4><p>¿Qué sucedería en una montaña rusa real? ¿Qué factores no considera este modelo?</p></article>
+        </div>
+      </section>
+    </section>
+
+    <footer class="footer"><span>Laboratorio de modelación matemática</span><span>Una exploración interactiva</span></footer>
+  </main>
+</body>
+</html>
